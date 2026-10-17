@@ -1,12 +1,12 @@
 {
  "machine": "MacBook-Air-Ruslan",
  "window": "7d",
- "updated": "2026-10-17T17:45",
+ "updated": "2026-10-17T18:46",
  "totals": {
-  "input_tokens": 54266,
-  "output_tokens": 10365946,
-  "cache_creation_input_tokens": 135024230,
-  "cache_read_input_tokens": 6480164117
+  "input_tokens": 54822,
+  "output_tokens": 10404075,
+  "cache_creation_input_tokens": 135300377,
+  "cache_read_input_tokens": 6543302403
  },
  "by_model": {
   "claude-sonnet-5-5": {
@@ -16,10 +16,10 @@
    "cache_read_input_tokens": 45118113
   },
   "claude-opus-5-5": {
-   "input_tokens": 52804,
-   "output_tokens": 10322549,
-   "cache_creation_input_tokens": 128449358,
-   "cache_read_input_tokens": 6435010494
+   "input_tokens": 53360,
+   "output_tokens": 10360678,
+   "cache_creation_input_tokens": 128725505,
+   "cache_read_input_tokens": 6498148780
   },
   "<synthetic>": {
    "input_tokens": 0,
