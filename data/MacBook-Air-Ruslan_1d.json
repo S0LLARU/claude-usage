@@ -1,0 +1,25 @@
+{
+ "machine": "MacBook-Air-Ruslan",
+ "window": "1d",
+ "updated": "2026-10-17T16:43",
+ "totals": {
+  "input_tokens": 882,
+  "output_tokens": 322744,
+  "cache_creation_input_tokens": 3495245,
+  "cache_read_input_tokens": 103194852
+ },
+ "by_model": {
+  "claude-opus-5-5": {
+   "input_tokens": 664,
+   "output_tokens": 320745,
+   "cache_creation_input_tokens": 2280342,
+   "cache_read_input_tokens": 96638172
+  },
+  "claude-sonnet-5-5": {
+   "input_tokens": 218,
+   "output_tokens": 1999,
+   "cache_creation_input_tokens": 1214903,
+   "cache_read_input_tokens": 6556680
+  }
+ }
+}

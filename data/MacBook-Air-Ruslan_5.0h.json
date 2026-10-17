@@ -1,0 +1,19 @@
+{
+ "machine": "MacBook-Air-Ruslan",
+ "window": "5.0h",
+ "updated": "2026-10-17T16:43",
+ "totals": {
+  "input_tokens": 48,
+  "output_tokens": 40373,
+  "cache_creation_input_tokens": 800836,
+  "cache_read_input_tokens": 4837395
+ },
+ "by_model": {
+  "claude-opus-5-5": {
+   "input_tokens": 48,
+   "output_tokens": 40373,
+   "cache_creation_input_tokens": 800836,
+   "cache_read_input_tokens": 4837395
+  }
+ }
+}
