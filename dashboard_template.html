@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="refresh" content="600">
+<title>Claude Usage</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --track: #f0efec;
+    --ring: rgba(11,11,11,0.10);
+    --warn: #fab219;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+      --muted: #898781; --grid: #2c2c2a; --track: #262624; --ring: rgba(255,255,255,0.10);
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --ink: #ffffff; --ink-2: #c3c2b7;
+    --muted: #898781; --grid: #2c2c2a; --track: #262624; --ring: rgba(255,255,255,0.10);
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--page); color: var(--ink);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  main { max-width: 880px; margin: 0 auto; padding: 28px 16px 48px; }
+  header { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  h1 { font-size: 18px; font-weight: 600; margin: 0; }
+  .sub { color: var(--muted); font-size: 12px; }
+  .tabs { display: inline-flex; background: var(--track); border-radius: 8px; padding: 3px; }
+  .tabs button {
+    border: 0; background: none; color: var(--ink-2); font: inherit; font-size: 13px;
+    padding: 5px 12px; border-radius: 6px; cursor: pointer;
+  }
+  .tabs button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--ring); font-weight: 600; }
+
+  .panel { background: var(--surface); border-radius: 12px; box-shadow: 0 0 0 1px var(--ring); padding: 20px; margin-top: 16px; }
+  .label { color: var(--ink-2); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+  .hero { font-size: 36px; font-weight: 600; margin: 4px 0 2px; }
+  .split { display: flex; gap: 2px; height: 14px; margin: 18px 0 10px; }
+  .split div { border-radius: 4px; min-width: 4px; transition: flex-grow .3s; }
+  .legend { display: flex; gap: 18px; flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
+  .legend b { color: var(--ink); font-weight: 600; }
+  .dot { width: 10px; height: 10px; border-radius: 3px; flex: none; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 16px; }
+  .card { background: var(--surface); border-radius: 12px; box-shadow: 0 0 0 1px var(--ring); padding: 18px 20px; }
+  .card h2 { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; margin: 0; }
+  .card .pct { font-size: 30px; font-weight: 600; margin: 8px 0 12px; }
+  .stats { display: grid; grid-template-columns: 1fr auto; gap: 4px 12px; font-size: 13px; }
+  .stats dt { color: var(--ink-2); }
+  .stats dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+  .stale { margin-top: 10px; font-size: 12px; color: var(--ink-2); display: flex; gap: 6px; align-items: center; }
+  .stale::before { content: "!"; display: inline-grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; background: var(--warn); color: #0b0b0b; font-weight: 700; font-size: 11px; }
+
+  .proj-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+  .proj-head h3 { margin: 0; font-size: 14px; font-weight: 600; }
+  .rows { display: grid; gap: 2px; }
+  .row { display: grid; grid-template-columns: minmax(0, 190px) 1fr 52px 64px; gap: 12px; align-items: center; padding: 5px 0; border-radius: 6px; }
+  .row:hover { background: var(--track); }
+  .row .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: flex; align-items: center; gap: 8px; }
+  .row .bar { height: 10px; border-radius: 0 4px 4px 0; min-width: 2px; }
+  .row .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .row .out { text-align: right; font-variant-numeric: tabular-nums; color: var(--muted); font-size: 12px; }
+  .cols { color: var(--muted); font-size: 11px; }
+  .cols:hover { background: none; }
+  .empty { color: var(--muted); padding: 12px 0; }
+  .note { color: var(--muted); font-size: 12px; margin-top: 16px; }
+
+  #tip {
+    position: fixed; pointer-events: none; z-index: 10; opacity: 0; transition: opacity .1s;
+    background: var(--surface); color: var(--ink); box-shadow: 0 0 0 1px var(--ring), 0 6px 20px rgba(0,0,0,.12);
+    border-radius: 8px; padding: 10px 12px; font-size: 12px; min-width: 180px;
+  }
+  #tip .t { font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  #tip dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; }
+  #tip dt { color: var(--ink-2); } #tip dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
+
+  @media (max-width: 560px) {
+    .row { grid-template-columns: minmax(0, 120px) 1fr 46px; }
+    .row .out { display: none; }
+    .hero { font-size: 30px; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <h1>Расход Claude по компам</h1>
+      <div class="sub" id="gen"></div>
+    </div>
+    <div class="tabs" role="group" aria-label="Период">
+      <button data-w="5h">5 часов</button><button data-w="1d">Сутки</button><button data-w="7d">Неделя</button>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="label">Всего за период</div>
+    <div class="hero" id="total"></div>
+    <div class="sub">токенов: ввод + вывод + запись в кэш</div>
+    <div class="split" id="split"></div>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section class="cards" id="cards"></section>
+
+  <section class="panel">
+    <div class="proj-head">
+      <h3>Проекты</h3>
+      <div class="legend" id="legend2"></div>
+    </div>
+    <div class="rows" id="rows"></div>
+  </section>
+
+  <p class="note">Доля = (ввод + вывод + запись в кэш) от суммы по всем компам. Чтение кэша не учитывается: его много, но оно дешёвое.
+  Процент лимита ≈ общий процент из Settings → Usage × доля компа. Обновляется раз в час.</p>
+</main>
+<div id="tip"></div>
+
+<script>
+const D = __DATA__;
+const COLORS = ["var(--s1)", "var(--s2)", "var(--s3)"];
+const machines = Object.keys(D.machines).sort();           // color follows the machine, not its rank
+const color = m => COLORS[machines.indexOf(m) % COLORS.length];
+const work = t => t.input_tokens + t.output_tokens + t.cache_creation_input_tokens;
+const fmt = n => n >= 1e9 ? (n / 1e9).toFixed(2) + "B" : n >= 1e6 ? (n / 1e6).toFixed(n >= 1e8 ? 0 : 1) + "M" : n >= 1e3 ? (n / 1e3).toFixed(1) + "K" : String(n);
+const pct = x => (x * 100).toFixed(x < 0.1 ? 1 : 0) + "%";
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
+const ago = iso => { const h = (Date.now() - new Date(iso)) / 36e5; return h < 1 ? Math.max(1, Math.round(h * 60)) + " мин назад" : h < 48 ? Math.round(h) + " ч назад" : Math.round(h / 24) + " дн назад"; };
+
+let win = "5h";
+try { win = localStorage.getItem("win") || win; } catch (e) {}
+document.getElementById("gen").textContent = "Отчёт собран " + ago(D.generated) + " · " + machines.length + " комп(а)";
+
+function legendHTML() {
+  return machines.map(m => `<span><i class="dot" style="background:${color(m)}"></i>${esc(m)}</span>`).join("");
+}
+
+function render() {
+  document.querySelectorAll(".tabs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.w === win));
+  const rows = machines.map(m => ({ m, w: (D.machines[m].windows || {})[win] })).filter(r => r.w);
+  const total = rows.reduce((s, r) => s + work(r.w.totals), 0);
+  document.getElementById("total").textContent = fmt(total);
+
+  document.getElementById("split").innerHTML = total ? rows.map(r =>
+    `<div data-m="${esc(r.m)}" style="flex-grow:${work(r.w.totals)};background:${color(r.m)}"></div>`).join("") : "";
+  document.getElementById("legend").innerHTML = rows.map(r =>
+    `<span><i class="dot" style="background:${color(r.m)}"></i>${esc(r.m)} <b>${total ? pct(work(r.w.totals) / total) : "—"}</b></span>`).join("");
+  document.getElementById("legend2").innerHTML = machines.length > 1 ? legendHTML() : "";
+
+  document.getElementById("cards").innerHTML = rows.map(r => {
+    const t = r.w.totals, doc = D.machines[r.m];
+    const stale = (Date.now() - new Date(doc.updated)) / 36e5 > 2;
+    return `<article class="card">
+      <h2><i class="dot" style="background:${color(r.m)}"></i>${esc(r.m)}</h2>
+      <div class="pct">${total ? pct(work(t) / total) : "—"}</div>
+      <dl class="stats">
+        <dt>Вывод</dt><dd>${fmt(t.output_tokens)}</dd>
+        <dt>Ввод + запись в кэш</dt><dd>${fmt(t.input_tokens + t.cache_creation_input_tokens)}</dd>
+        <dt>Чтение кэша</dt><dd>${fmt(t.cache_read_input_tokens)}</dd>
+        <dt>Данные</dt><dd>${ago(doc.updated)}</dd>
+      </dl>
+      ${stale ? `<div class="stale">Комп давно не присылал данные</div>` : ""}
+    </article>`;
+  }).join("");
+
+  const projects = rows.flatMap(r => Object.entries(r.w.by_project).map(([p, t]) => ({ p, m: r.m, t })))
+    .filter(x => work(x.t) > 0).sort((a, b) => work(b.t) - work(a.t)).slice(0, 12);
+  const max = projects.length ? work(projects[0].t) : 1;
+  document.getElementById("rows").innerHTML = projects.length ?
+    `<div class="row cols"><span>проект</span><span></span><span class="num">доля</span><span class="out">вывод</span></div>` +
+    projects.map((x, i) => `<div class="row" data-i="${i}">
+      <span class="name" title="${esc(x.p)}"><i class="dot" style="background:${color(x.m)}"></i>${esc(x.p)}</span>
+      <span><div class="bar" style="width:${(work(x.t) / max * 100).toFixed(1)}%;background:${color(x.m)}"></div></span>
+      <span class="num">${pct(work(x.t) / total)}</span>
+      <span class="out">${fmt(x.t.output_tokens)}</span>
+    </div>`).join("") : `<div class="empty">За этот период активности нет</div>`;
+
+  // tooltips
+  const tip = document.getElementById("tip");
+  const show = (e, title, m, t) => {
+    tip.innerHTML = `<div class="t"><i class="dot" style="background:${color(m)}"></i>${esc(title)}</div><dl>
+      ${title !== m ? `<dt>Комп</dt><dd>${esc(m)}</dd>` : ""}
+      <dt>Доля</dt><dd>${pct(work(t) / total)}</dd>
+      <dt>Вывод</dt><dd>${fmt(t.output_tokens)}</dd>
+      <dt>Ввод + запись</dt><dd>${fmt(t.input_tokens + t.cache_creation_input_tokens)}</dd>
+      <dt>Чтение кэша</dt><dd>${fmt(t.cache_read_input_tokens)}</dd></dl>`;
+    const x = Math.min(e.clientX + 14, innerWidth - tip.offsetWidth - 8), y = Math.min(e.clientY + 14, innerHeight - tip.offsetHeight - 8);
+    tip.style.left = x + "px"; tip.style.top = y + "px"; tip.style.opacity = 1;
+  };
+  const hide = () => tip.style.opacity = 0;
+  document.querySelectorAll("#rows .row[data-i]").forEach(el => {
+    const x = projects[+el.dataset.i];
+    el.onmousemove = e => show(e, x.p, x.m, x.t); el.onmouseleave = hide;
+  });
+  document.querySelectorAll("#split div").forEach(el => {
+    const r = rows.find(r => r.m === el.dataset.m);
+    el.onmousemove = e => show(e, r.m, r.m, r.w.totals); el.onmouseleave = hide;
+  });
+}
+
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  win = b.dataset.w;
+  try { localStorage.setItem("win", win); } catch (e) {}
+  render();
+});
+render();
+</script>
+</body>
+</html>

@@ -1,2 +1,3 @@
-data/report_*.txt
+data/
+config
 last_run.log
